@@ -1,893 +1,838 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="嚥下評価">
-  <meta name="theme-color" content="#2563eb">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <title>摂食・嚥下評価</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="嚥下評価">
+<meta name="theme-color" content="#2c5f8a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>摂食・嚥下評価</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:#f4f6f9;color:#1a1a1a;font-size:15px;line-height:1.5}
+.app-header{background:#2c5f8a;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.app-header h1{font-size:17px;font-weight:600}
+.header-date{font-size:12px;opacity:0.85}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e0e4ea;position:sticky;top:54px;z-index:99}
+.tab{flex:1;padding:12px 8px;font-size:13px;font-weight:500;text-align:center;cursor:pointer;border:none;background:none;color:#666;border-bottom:2px solid transparent}
+.tab.active{color:#2c5f8a;border-bottom-color:#2c5f8a}
+.page{display:none;padding:12px 12px 100px}
+.page.active{display:block}
+.status-bar{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:10px;border:1px solid #e0e4ea}
+.status-bar .label{font-size:11px;color:#888;margin-bottom:6px}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:11px;padding:3px 8px;border-radius:20px;border:1px solid #ddd;color:#888;background:#f8f8f8}
+.tag.done{background:#e6f4ea;color:#2e7d32;border-color:#a5d6a7}
+.sec{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #e8eaed}
+.sec-title{font-size:14px;font-weight:600;color:#2c5f8a;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:6px}
+.sec-title .ico{font-size:16px}
+.f{margin-bottom:12px}
+.f>label,.fl{display:block;font-size:12px;color:#666;margin-bottom:5px;font-weight:500}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;padding:9px 11px;border:1px solid #dce1e9;border-radius:8px;font-size:14px;background:#fafbfc;color:#1a1a1a;-webkit-appearance:none;appearance:none}
+input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,select:focus,textarea:focus{outline:none;border-color:#2c5f8a;background:#fff}
+textarea{resize:vertical;min-height:60px;font-family:inherit}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.rg,.cg{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.rg label,.cg label{display:flex;align-items:center;gap:4px;font-size:13px;color:#333;background:#f5f6f8;border:1px solid #dce1e9;border-radius:8px;padding:7px 11px;cursor:pointer;transition:all 0.15s;user-select:none}
+.rg label:active,.cg label:active{transform:scale(0.96)}
+.rg input[type=radio],.cg input[type=checkbox]{display:none}
+.rg label:has(input:checked),.cg label:has(input:checked){background:#e8f0fb;border-color:#2c5f8a;color:#2c5f8a;font-weight:500}
+.badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600}
+.b-ok{background:#e6f4ea;color:#2e7d32}
+.b-w{background:#fff8e1;color:#e65100}
+.b-ng{background:#fce8e6;color:#c62828}
+.hint{font-size:11px;color:#999;margin-top:4px;line-height:1.4}
+.alert-d{padding:8px 12px;border-radius:8px;font-size:13px;margin-top:6px;background:#fce8e6;color:#c62828;border-left:3px solid #ef5350}
+.alert-w{padding:8px 12px;border-radius:8px;font-size:13px;margin-top:6px;background:#fff8e1;color:#e65100;border-left:3px solid #ffa726}
+.sub-sec{background:#f8fafc;border-radius:8px;padding:11px;margin:8px 0;border:1px solid #eef2f7}
+.sub-title{font-size:12px;font-weight:600;color:#555;margin-bottom:8px}
+.divider{height:1px;background:#eef2f7;margin:12px 0}
+.btn-bar{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;padding:12px 8px;border:1px solid #dce1e9;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;background:#f5f6f8;color:#333;transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:#2c5f8a;color:#fff;border-color:#2c5f8a}
+.btn-accent{background:#4caf7d;color:#fff;border-color:#4caf7d}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-      background: #f0f4ff;
-      color: #1e293b;
-      min-height: 100vh;
-    }
+/* 写真 */
+.photo-zone{border:2px dashed #c8d4e8;border-radius:10px;padding:20px 12px;text-align:center;cursor:pointer;background:#f8fafc;transition:background 0.15s}
+.photo-zone:active{background:#e8f0fb}
+.photo-zone .plus{font-size:32px;color:#2c5f8a;line-height:1}
+.photo-zone p{font-size:13px;color:#888;margin-top:6px}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.photo-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-del{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);border:none;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.photo-memo{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);padding:3px 5px}
+.photo-memo input{background:transparent;border:none;color:#fff;font-size:10px;width:100%;padding:0}
+.photo-memo input::placeholder{color:rgba(255,255,255,0.65)}
 
-    header {
-      background: #2563eb;
-      color: white;
-      padding: 16px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
+/* lightbox */
+.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:999;align-items:center;justify-content:center;padding:16px}
+.lb.open{display:flex}
+.lb img{max-width:100%;max-height:85vh;border-radius:8px;object-fit:contain}
+.lb-close{position:absolute;top:14px;right:18px;font-size:28px;color:#fff;background:none;border:none;cursor:pointer}
 
-    header h1 {
-      font-size: 18px;
-      font-weight: 700;
-    }
+/* 家族説明 */
+.ex-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #e8eaed}
+.ex-card h3{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:10px}
+.risk-bar{display:flex;gap:5px;margin:8px 0}
+.rv{flex:1;height:34px;border-radius:6px;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#999;border:1px solid #e0e4ea}
+.rv.low{background:#e6f4ea;color:#2e7d32;border-color:#81c784}
+.rv.mid{background:#fff8e1;color:#e65100;border-color:#ffb74d}
+.rv.high{background:#fce8e6;color:#c62828;border-color:#ef9a9a}
+.ex-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f2f5;font-size:14px}
+.ex-row:last-child{border-bottom:none}
+.ex-lbl{color:#888;font-size:13px}
+.ex-val{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+.warn-box{background:#fff8e1;border-radius:8px;padding:10px 12px;margin-top:8px;border-left:3px solid #ffa726}
+.warn-box p{font-size:13px;color:#e65100;line-height:1.6}
+.warn-box .wt{font-size:11px;font-weight:600;margin-bottom:4px;color:#e65100}
+.rec-ul{list-style:none;margin-top:8px}
+.rec-ul li{font-size:13px;padding:5px 0 5px 14px;position:relative;color:#333;border-bottom:1px solid #f5f6f8}
+.rec-ul li:last-child{border-bottom:none}
+.rec-ul li::before{content:"";position:absolute;left:0;top:13px;width:6px;height:6px;border-radius:50%;background:#2c5f8a}
+.ex-footer{font-size:11px;color:#aaa;text-align:right;margin-top:8px}
 
-    header p {
-      font-size: 12px;
-      opacity: 0.85;
-      margin-top: 2px;
-    }
-
-    nav {
-      display: flex;
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    nav button {
-      flex: 1;
-      min-width: 80px;
-      padding: 12px 8px;
-      border: none;
-      background: none;
-      font-size: 12px;
-      color: #64748b;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    nav button.active {
-      color: #2563eb;
-      border-bottom-color: #2563eb;
-      font-weight: 600;
-    }
-
-    main {
-      padding: 16px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 4px;
-    }
-
-    .card .subtitle {
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 16px;
-    }
-
-    .info-box {
-      background: #eff6ff;
-      border-left: 4px solid #2563eb;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      color: #1e40af;
-      line-height: 1.6;
-    }
-
-    .field-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 6px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 15px;
-      color: #1e293b;
-      background: #fff;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-    }
-
-    textarea { resize: vertical; min-height: 80px; }
-
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .radio-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .radio-item:has(input:checked) {
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-
-    .radio-item input[type="radio"] {
-      margin-top: 2px;
-      accent-color: #2563eb;
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .radio-item .radio-label {
-      font-size: 13px;
-      line-height: 1.5;
-      color: #1e293b;
-    }
-
-    .radio-item .radio-score {
-      margin-left: auto;
-      font-size: 12px;
-      font-weight: 700;
-      color: #2563eb;
-      flex-shrink: 0;
-    }
-
-    .timer-box {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .timer-display {
-      font-size: 56px;
-      font-weight: 700;
-      color: #2563eb;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
-
-    .timer-sub {
-      font-size: 13px;
-      color: #64748b;
-      margin-top: 8px;
-    }
-
-    .timer-controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 16px;
-    }
-
-    .count-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      margin: 16px 0;
-    }
-
-    .count-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: none;
-      font-size: 24px;
-      font-weight: 700;
-      cursor: pointer;
-      background: #e2e8f0;
-      color: #1e293b;
-    }
-
-    .count-btn.plus { background: #2563eb; color: white; }
-
-    .count-num {
-      font-size: 48px;
-      font-weight: 700;
-      color: #1e293b;
-      min-width: 60px;
-      text-align: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      border-radius: 10px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-      gap: 6px;
-    }
-
-    .btn-primary { background: #2563eb; color: white; }
-    .btn-primary:active { background: #1d4ed8; }
-    .btn-secondary { background: #e2e8f0; color: #374151; }
-    .btn-secondary:active { background: #cbd5e1; }
-    .btn-danger { background: #fee2e2; color: #dc2626; }
-    .btn-success { background: #dcfce7; color: #16a34a; }
-    .btn-full { width: 100%; }
-
-    .result-box {
-      border-radius: 10px;
-      padding: 16px;
-      margin-top: 16px;
-      text-align: center;
-    }
-
-    .result-box.normal { background: #dcfce7; }
-    .result-box.caution { background: #fef9c3; }
-    .result-box.alert { background: #fee2e2; }
-
-    .result-box .result-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .result-box.normal .result-title { color: #16a34a; }
-    .result-box.caution .result-title { color: #ca8a04; }
-    .result-box.alert .result-title { color: #dc2626; }
-
-    .result-box .result-detail {
-      font-size: 13px;
-      color: #374151;
-      line-height: 1.6;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #f1f5f9;
-      font-size: 14px;
-    }
-
-    .summary-row:last-child { border-bottom: none; }
-
-    .summary-label { color: #64748b; }
-
-    .badge {
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge-green { background: #dcfce7; color: #16a34a; }
-    .badge-yellow { background: #fef9c3; color: #ca8a04; }
-    .badge-red { background: #fee2e2; color: #dc2626; }
-    .badge-blue { background: #dbeafe; color: #2563eb; }
-    .badge-gray { background: #f1f5f9; color: #64748b; }
-
-    .step-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .step-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      background: #e2e8f0;
-      color: #94a3b8;
-      flex-shrink: 0;
-    }
-
-    .step-dot.done { background: #2563eb; color: white; }
-    .step-dot.active { background: #2563eb; color: white; box-shadow: 0 0 0 3px #bfdbfe; }
-
-    .step-line {
-      flex: 1;
-      height: 2px;
-      background: #e2e8f0;
-    }
-
-    .step-line.done { background: #2563eb; }
-
-    .records-list { display: flex; flex-direction: column; gap: 12px; }
-
-    .record-card {
-      background: white;
-      border-radius: 10px;
-      padding: 14px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-
-    .record-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .record-name { font-size: 15px; font-weight: 700; }
-    .record-date { font-size: 12px; color: #94a3b8; }
-
-    .record-scores {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #94a3b8;
-    }
-
-    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-state p { font-size: 14px; }
-
-    .section-divider {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 20px 0 10px;
-    }
-
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body { background: #0f172a; color: #e2e8f0; }
-      .card { background: #1e293b; }
-      nav { background: #1e293b; border-bottom-color: #334155; }
-      nav button { color: #94a3b8; }
-      input, select, textarea { background: #0f172a; color: #e2e8f0; border-color: #334155; }
-      .radio-item { border-color: #334155; }
-      .radio-item:has(input:checked) { background: #1e3a5f; }
-      .summary-row { border-bottom-color: #334155; }
-      .record-card { background: #1e293b; }
-      .count-btn { background: #334155; color: #e2e8f0; }
-    }
-  </style>
+@media print{
+  .app-header,.tabs,.status-bar,.photo-zone,.photo-grid,.lb,.btn-bar{display:none!important}
+  .page{display:block!important;padding:0}
+  .sec,.ex-card{border:1px solid #ccc;border-radius:0;margin-bottom:8px;break-inside:avoid}
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1>摂食・嚥下評価</h1>
-  <p id="current-date"></p>
-</header>
+<div class="lb" id="lb" onclick="closeLb()">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
 
-<nav>
-  <button class="active" onclick="showSection('rsst')">RSST</button>
-  <button onclick="showSection('mwst')">MWST</button>
-  <button onclick="showSection('ft')">FT</button>
-  <button onclick="showSection('summary')">まとめ</button>
-  <button onclick="showSection('records')">記録</button>
-</nav>
+<div class="app-header">
+  <div>
+    <h1>摂食・嚥下評価</h1>
+    <div class="header-date" id="hdr-date"></div>
+  </div>
+  <div id="hdr-name" style="font-size:13px;font-weight:500;opacity:0.9"></div>
+</div>
 
-<main>
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('eval')">評価記録</button>
+  <button class="tab" onclick="switchTab('explain')">家族説明用</button>
+</div>
 
-  <!-- RSST -->
-  <div id="sec-rsst" class="section active">
-    <div class="card">
-      <h2>RSST（反復唾液嚥下テスト）</h2>
-      <p class="subtitle">30秒間の反復唾液嚥下回数を測定</p>
-      <div class="info-box">
-        口腔内を湿らせ、「唾を飲んでください」と指示。30秒間、喉仏が指の腹を乗り越えた回数をカウントします。
-      </div>
+<!-- ========== 評価記録 ========== -->
+<div class="page active" id="page-eval">
 
-      <div class="field-group">
-        <label>患者名</label>
-        <input type="text" id="rsst-name" placeholder="例：山田 太郎">
-      </div>
+<div class="status-bar">
+  <div class="label">記録状況</div>
+  <div class="tags">
+    <span class="tag" id="t-basic">基本・服薬</span>
+    <span class="tag" id="t-req">依頼内容</span>
+    <span class="tag" id="t-oral">口腔機能</span>
+    <span class="tag" id="t-rsst">RSST</span>
+    <span class="tag" id="t-mwst">水飲み</span>
+    <span class="tag" id="t-ft">FT</span>
+    <span class="tag" id="t-cerv">頸部聴診</span>
+    <span class="tag" id="t-nut">栄養・食形態</span>
+    <span class="tag" id="t-photo">写真</span>
+  </div>
+</div>
 
-      <div class="timer-box">
-        <div class="timer-display" id="rsst-timer">30</div>
-        <div class="timer-sub" id="rsst-timer-sub">開始ボタンを押してください</div>
-        <div class="timer-controls">
-          <button class="btn btn-primary" id="rsst-start-btn" onclick="rsstStart()">開始</button>
-          <button class="btn btn-secondary" onclick="rsstReset()">リセット</button>
-        </div>
-      </div>
-
-      <div class="count-box">
-        <button class="count-btn" onclick="rsstCount(-1)">−</button>
-        <div class="count-num" id="rsst-count">0</div>
-        <button class="count-btn plus" onclick="rsstCount(1)">＋</button>
-      </div>
-
-      <div class="field-group">
-        <label>備考</label>
-        <textarea id="rsst-note" placeholder="観察所見など"></textarea>
-      </div>
-
-      <div id="rsst-result"></div>
+<!-- 基本情報 -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">👤</span>基本情報・服薬</div>
+  <div class="row2">
+    <div class="f"><label>氏名</label><input type="text" id="name" placeholder="山田 花子" oninput="sync()"></div>
+    <div class="f"><label>評価日</label><input type="date" id="eval-date" onchange="sync()"></div>
+  </div>
+  <div class="row3">
+    <div class="f"><label>年齢</label><input type="number" id="age" placeholder="歳"></div>
+    <div class="f"><label>性別</label>
+      <select id="gender"><option value="">—</option><option>女性</option><option>男性</option></select>
+    </div>
+    <div class="f"><label>要介護度</label>
+      <select id="care"><option value="">—</option><option>自立</option><option>要支援1</option><option>要支援2</option><option>要介護1</option><option>要介護2</option><option>要介護3</option><option>要介護4</option><option>要介護5</option></select>
     </div>
   </div>
-
-  <!-- MWST -->
-  <div id="sec-mwst" class="section">
-    <div class="card">
-      <h2>改訂水飲みテスト（MWST）</h2>
-      <p class="subtitle">3mLの冷水を嚥下させ評価</p>
-      <div class="info-box">
-        冷水3mLを口腔底に注ぎ、「飲んでください」と指示。嚥下後の状態と2回の追加嚥下を評価します。
-      </div>
-
-      <div class="field-group">
-        <label>患者名</label>
-        <input type="text" id="mwst-name" placeholder="例：山田 太郎">
-      </div>
-
-      <div class="field-group">
-        <label>評価スコア</label>
-        <div class="radio-group">
-          <label class="radio-item">
-            <input type="radio" name="mwst-score" value="1">
-            <span class="radio-label"><strong>1点</strong>：嚥下なし、むせる and/or 呼吸変化あり</span>
-            <span class="radio-score">1</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="mwst-score" value="2">
-            <span class="radio-label"><strong>2点</strong>：嚥下あり、呼吸変化あり（むせなし）</span>
-            <span class="radio-score">2</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="mwst-score" value="3">
-            <span class="radio-label"><strong>3点</strong>：嚥下あり、呼吸変化なし、むせ or 湿性嗄声あり</span>
-            <span class="radio-score">3</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="mwst-score" value="4">
-            <span class="radio-label"><strong>4点</strong>：嚥下あり、呼吸変化なし、むせ・湿性嗄声なし</span>
-            <span class="radio-score">4</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="mwst-score" value="5">
-            <span class="radio-label"><strong>5点</strong>：4点に加え、追加嚥下2回可能</span>
-            <span class="radio-score">5</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label>備考</label>
-        <textarea id="mwst-note" placeholder="観察所見など"></textarea>
-      </div>
-
-      <div id="mwst-result"></div>
+  <div class="f"><label>主疾患・既往</label><input type="text" id="diag" placeholder="脳梗塞後遺症、認知症など" oninput="sync()"></div>
+  <div class="f"><label>食事方法</label>
+    <div class="rg">
+      <label><input type="radio" name="feeding" value="経口"><span>経口</span></label>
+      <label><input type="radio" name="feeding" value="経管+経口"><span>経管+経口</span></label>
+      <label><input type="radio" name="feeding" value="経管のみ"><span>経管のみ</span></label>
+      <label><input type="radio" name="feeding" value="IVH"><span>IVH</span></label>
     </div>
   </div>
-
-  <!-- FT -->
-  <div id="sec-ft" class="section">
-    <div class="card">
-      <h2>フードテスト（FT）</h2>
-      <p class="subtitle">プリン様食品を用いた嚥下機能評価</p>
-      <div class="info-box">
-        プリン（茶碗蒸し相当）約4gを舌背前部に置き、嚥下させる。嚥下後の口腔内残留と追加嚥下を評価します。
-      </div>
-
-      <div class="field-group">
-        <label>患者名</label>
-        <input type="text" id="ft-name" placeholder="例：山田 太郎">
-      </div>
-
-      <div class="field-group">
-        <label>評価スコア</label>
-        <div class="radio-group">
-          <label class="radio-item">
-            <input type="radio" name="ft-score" value="1">
-            <span class="radio-label"><strong>1点</strong>：嚥下なし、むせる and/or 呼吸変化あり</span>
-            <span class="radio-score">1</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="ft-score" value="2">
-            <span class="radio-label"><strong>2点</strong>：嚥下あり、呼吸変化あり（むせなし）</span>
-            <span class="radio-score">2</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="ft-score" value="3">
-            <span class="radio-label"><strong>3点</strong>：嚥下あり、呼吸変化なし、むせ or 湿性嗄声、口腔残留中等度あり</span>
-            <span class="radio-score">3</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="ft-score" value="4">
-            <span class="radio-label"><strong>4点</strong>：嚥下あり、呼吸変化なし、むせ・湿性嗄声なし、口腔残留軽度</span>
-            <span class="radio-score">4</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="ft-score" value="5">
-            <span class="radio-label"><strong>5点</strong>：4点に加え、追加嚥下2回で口腔内残留なし</span>
-            <span class="radio-score">5</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label>備考</label>
-        <textarea id="ft-note" placeholder="観察所見など"></textarea>
-      </div>
-
-      <div id="ft-result"></div>
+  <div class="divider"></div>
+  <div class="sub-title">服薬情報</div>
+  <div class="f"><label>嚥下に影響しうる薬剤</label>
+    <div class="cg">
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>抗精神病薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>抗てんかん薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>抗コリン薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>睡眠薬・鎮静薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>ACE阻害薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>Ca拮抗薬</span></label>
+      <label><input type="checkbox" class="med-cb" onchange="sync()"><span>パーキンソン薬</span></label>
     </div>
   </div>
-
-  <!-- まとめ -->
-  <div id="sec-summary" class="section">
-    <div class="card">
-      <h2>評価まとめ</h2>
-      <p class="subtitle">各テストの結果を確認・保存</p>
-
-      <div id="summary-content">
-        <div class="empty-state">
-          <div class="icon">📋</div>
-          <p>各タブでテストを実施してください</p>
-        </div>
+  <div class="row2">
+    <div class="f"><label>服薬形態</label>
+      <div class="rg">
+        <label><input type="radio" name="med-form" value="錠剤"><span>錠剤</span></label>
+        <label><input type="radio" name="med-form" value="カプセル"><span>カプセル</span></label>
+        <label><input type="radio" name="med-form" value="粉砕"><span>粉砕</span></label>
+        <label><input type="radio" name="med-form" value="OD錠"><span>OD錠</span></label>
+        <label><input type="radio" name="med-form" value="液剤"><span>液剤</span></label>
+        <label><input type="radio" name="med-form" value="貼付剤"><span>貼付剤</span></label>
+        <label><input type="radio" name="med-form" value="混合"><span>混合</span></label>
       </div>
-
-      <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn btn-primary btn-full" onclick="saveSummary()">記録に保存</button>
-        <button class="btn btn-secondary btn-full" onclick="clearAll()">入力をクリア</button>
+    </div>
+    <div class="f"><label>服薬時の問題</label>
+      <div class="cg">
+        <label><input type="checkbox"><span>むせあり</span></label>
+        <label><input type="checkbox"><span>貼り付き</span></label>
+        <label><input type="checkbox"><span>飲み込めない</span></label>
+        <label><input type="checkbox"><span>拒否</span></label>
+        <label><input type="checkbox"><span>問題なし</span></label>
       </div>
     </div>
   </div>
+  <div class="f"><label>薬剤メモ</label><textarea id="med-memo" placeholder="内服薬の詳細・注意薬など" oninput="sync()"></textarea></div>
+</div>
 
-  <!-- 記録 -->
-  <div id="sec-records" class="section">
-    <div class="card">
-      <h2>評価記録</h2>
-      <p class="subtitle">保存した評価の履歴</p>
-      <div id="records-list">
-        <div class="empty-state">
-          <div class="icon">📂</div>
-          <p>まだ記録がありません</p>
-        </div>
+<!-- 評価依頼 -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">📋</span>評価依頼内容</div>
+  <div class="f"><label>依頼者</label><input type="text" id="requester" placeholder="担当ケアマネ・訪問看護師など"></div>
+  <div class="f"><label>主訴・理由</label>
+    <div class="cg">
+      <label><input type="checkbox" class="req-cb"><span>むせが増えた</span></label>
+      <label><input type="checkbox" class="req-cb"><span>食事量が減った</span></label>
+      <label><input type="checkbox" class="req-cb"><span>体重減少</span></label>
+      <label><input type="checkbox" class="req-cb"><span>発熱を繰り返す</span></label>
+      <label><input type="checkbox" class="req-cb"><span>食形態の見直し</span></label>
+      <label><input type="checkbox" class="req-cb"><span>誤嚥性肺炎後</span></label>
+      <label><input type="checkbox" class="req-cb"><span>口腔ケア指導</span></label>
+      <label><input type="checkbox" class="req-cb"><span>経管から経口移行</span></label>
+    </div>
+  </div>
+  <div class="f"><label>詳細・背景</label><textarea id="req-detail" placeholder="経緯・家族・施設からの情報など" oninput="sync()"></textarea></div>
+</div>
+
+<!-- 口腔機能 -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">🦷</span>口腔機能評価</div>
+  <div class="row2">
+    <div class="f"><label>口腔衛生状態</label>
+      <div class="rg">
+        <label><input type="radio" name="oral-hyg" value="良好" onchange="sync()"><span>良好</span></label>
+        <label><input type="radio" name="oral-hyg" value="やや不良" onchange="sync()"><span>やや不良</span></label>
+        <label><input type="radio" name="oral-hyg" value="不良" onchange="sync()"><span>不良</span></label>
+      </div>
+    </div>
+    <div class="f"><label>口唇閉鎖</label>
+      <div class="rg">
+        <label><input type="radio" name="lip" value="良好"><span>良好</span></label>
+        <label><input type="radio" name="lip" value="不良"><span>不良</span></label>
       </div>
     </div>
   </div>
+  <div class="row2">
+    <div class="f"><label>開口</label>
+      <div class="rg">
+        <label><input type="radio" name="mouth-open" value="可"><span>可</span></label>
+        <label><input type="radio" name="mouth-open" value="困難"><span>困難</span></label>
+        <label><input type="radio" name="mouth-open" value="不可"><span>不可</span></label>
+      </div>
+    </div>
+    <div class="f"><label>舌運動</label>
+      <div class="cg">
+        <label><input type="checkbox"><span>前後</span></label>
+        <label><input type="checkbox"><span>左右</span></label>
+        <label><input type="checkbox"><span>挙上</span></label>
+        <label><input type="checkbox"><span>低下あり</span></label>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sub-title">舌圧・咬合力</div>
+  <div class="row3">
+    <div class="f"><label>舌圧（kPa）</label><input type="number" id="tongue-p" placeholder="kPa" step="0.1" oninput="evalTongue()"></div>
+    <div class="f"><label>測定機器</label>
+      <select><option value="">—</option><option>JMS舌圧測定器</option><option>簡易舌圧計</option><option>その他</option></select>
+    </div>
+    <div class="f"><label>判定</label><div id="tongue-eval" style="font-size:12px;padding-top:8px;color:#666">—</div></div>
+  </div>
+  <div class="f"><label>咬合圧</label>
+    <div class="rg">
+      <label><input type="radio" name="bite" value="良好"><span>良好</span></label>
+      <label><input type="radio" name="bite" value="低下"><span>低下</span></label>
+      <label><input type="radio" name="bite" value="著明な低下"><span>著明な低下</span></label>
+      <label><input type="radio" name="bite" value="評価困難"><span>評価困難</span></label>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="f"><label>義歯</label>
+      <div class="rg">
+        <label><input type="radio" name="denture" value="なし"><span>なし</span></label>
+        <label><input type="radio" name="denture" value="上下"><span>上下</span></label>
+        <label><input type="radio" name="denture" value="上のみ"><span>上のみ</span></label>
+        <label><input type="radio" name="denture" value="下のみ"><span>下のみ</span></label>
+      </div>
+    </div>
+    <div class="f"><label>義歯メモ</label><input type="text" placeholder="適合・破損など"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="sub-title">咳反射テスト</div>
+  <div class="f"><label>実施方法</label>
+    <div class="rg">
+      <label><input type="radio" name="cough-method" value="クエン酸吸入"><span>クエン酸吸入</span></label>
+      <label><input type="radio" name="cough-method" value="酒石酸吸入"><span>酒石酸吸入</span></label>
+      <label><input type="radio" name="cough-method" value="自発咳嗽確認"><span>自発咳嗽確認</span></label>
+      <label><input type="radio" name="cough-method" value="未実施"><span>未実施</span></label>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="f"><label>咳反射</label>
+      <div class="rg">
+        <label><input type="radio" name="cough-ref" value="正常" onchange="sync()"><span>正常</span></label>
+        <label><input type="radio" name="cough-ref" value="低下" onchange="sync()"><span>低下</span></label>
+        <label><input type="radio" name="cough-ref" value="消失" onchange="sync()"><span>消失</span></label>
+      </div>
+    </div>
+    <div class="f"><label>咳の強さ</label>
+      <div class="rg">
+        <label><input type="radio" name="cough-str" value="強い"><span>強い</span></label>
+        <label><input type="radio" name="cough-str" value="弱い"><span>弱い</span></label>
+        <label><input type="radio" name="cough-str" value="なし"><span>なし</span></label>
+      </div>
+    </div>
+  </div>
+  <div class="f"><label>口腔所見メモ</label><textarea id="oral-memo" placeholder="乾燥・潰瘍・舌苔など"></textarea></div>
+</div>
 
-</main>
+<!-- RSST -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">💧</span>RSST（反復唾液嚥下テスト）</div>
+  <div class="row2">
+    <div class="f"><label>30秒間の回数</label><input type="number" id="rsst" min="0" max="20" placeholder="回" onchange="evalRSST();sync()"></div>
+    <div class="f" style="padding-top:22px"><div id="rsst-result"></div></div>
+  </div>
+  <p class="hint">3回以上：正常　2回以下：嚥下障害の疑い</p>
+  <div class="f"><label>喉頭挙上</label>
+    <div class="rg">
+      <label><input type="radio" name="rsst-lx" value="確認できる"><span>確認できる</span></label>
+      <label><input type="radio" name="rsst-lx" value="不明確"><span>不明確</span></label>
+      <label><input type="radio" name="rsst-lx" value="確認できない"><span>確認できない</span></label>
+    </div>
+  </div>
+  <div class="sub-sec">
+    <div class="sub-title">頸部聴診所見（RSST）</div>
+    <div class="f"><label>嚥下音</label>
+      <div class="rg">
+        <label><input type="radio" name="rsst-snd" value="正常"><span>正常</span></label>
+        <label><input type="radio" name="rsst-snd" value="弱い"><span>弱い</span></label>
+        <label><input type="radio" name="rsst-snd" value="複数回"><span>複数回</span></label>
+        <label><input type="radio" name="rsst-snd" value="聴取不明"><span>聴取不明</span></label>
+      </div>
+    </div>
+    <div class="f"><label>嚥下後の呼吸音</label>
+      <div class="rg">
+        <label><input type="radio" name="rsst-br" value="クリア"><span>クリア</span></label>
+        <label><input type="radio" name="rsst-br" value="ゴロゴロ"><span>ゴロゴロ</span></label>
+        <label><input type="radio" name="rsst-br" value="ガラガラ"><span>ガラガラ</span></label>
+      </div>
+    </div>
+    <div class="f"><label>メモ</label><textarea placeholder="観察事項" style="min-height:44px"></textarea></div>
+  </div>
+  <div class="f"><label>メモ</label><textarea id="rsst-memo" placeholder="全体所見"></textarea></div>
+</div>
+
+<!-- MWST -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">🥛</span>水飲みテスト（MWST）</div>
+  <div class="sub-sec">
+    <div class="sub-title">通常水（冷水 3ml）</div>
+    <div class="f"><label>判定スコア</label>
+      <div class="rg">
+        <label><input type="radio" name="mwst" value="1" onchange="evalMWST();sync()"><span>1点</span></label>
+        <label><input type="radio" name="mwst" value="2" onchange="evalMWST();sync()"><span>2点</span></label>
+        <label><input type="radio" name="mwst" value="3" onchange="evalMWST();sync()"><span>3点</span></label>
+        <label><input type="radio" name="mwst" value="4" onchange="evalMWST();sync()"><span>4点</span></label>
+        <label><input type="radio" name="mwst" value="5" onchange="evalMWST();sync()"><span>5点</span></label>
+      </div>
+      <div id="mwst-desc" class="hint" style="margin-top:5px"></div>
+      <div id="mwst-alert"></div>
+    </div>
+    <div class="f"><label>観察所見</label>
+      <div class="cg">
+        <label><input type="checkbox"><span>むせなし</span></label>
+        <label><input type="checkbox"><span>むせあり</span></label>
+        <label><input type="checkbox"><span>湿性嗄声</span></label>
+        <label><input type="checkbox"><span>呼吸切迫</span></label>
+        <label><input type="checkbox"><span>嚥下なし</span></label>
+      </div>
+    </div>
+    <div class="sub-sec" style="background:#fff">
+      <div class="sub-title">頸部聴診所見（通常水）</div>
+      <div class="f"><label>嚥下音</label>
+        <div class="rg">
+          <label><input type="radio" name="mwst-snd" value="正常" onchange="sync()"><span>正常</span></label>
+          <label><input type="radio" name="mwst-snd" value="弱い"><span>弱い</span></label>
+          <label><input type="radio" name="mwst-snd" value="複数回"><span>複数回</span></label>
+          <label><input type="radio" name="mwst-snd" value="聴取不明"><span>聴取不明</span></label>
+        </div>
+      </div>
+      <div class="f"><label>嚥下後の呼吸音</label>
+        <div class="rg">
+          <label><input type="radio" name="mwst-br" value="クリア"><span>クリア</span></label>
+          <label><input type="radio" name="mwst-br" value="ゴロゴロ（咽頭貯留）"><span>ゴロゴロ</span></label>
+          <label><input type="radio" name="mwst-br" value="ガラガラ（湿性）"><span>ガラガラ</span></label>
+          <label><input type="radio" name="mwst-br" value="ヒューヒュー"><span>ヒューヒュー</span></label>
+        </div>
+      </div>
+      <div class="f"><label>メモ</label><textarea placeholder="観察事項" style="min-height:44px"></textarea></div>
+    </div>
+    <div class="f"><label>メモ</label><textarea placeholder="観察事項"></textarea></div>
+  </div>
+  <div class="sub-sec">
+    <div class="sub-title">とろみ水テスト</div>
+    <div class="row2">
+      <div class="f"><label>とろみ段階</label>
+        <div class="rg">
+          <label><input type="radio" name="thick-lv" value="薄いとろみ" onchange="sync()"><span>薄い</span></label>
+          <label><input type="radio" name="thick-lv" value="中間のとろみ" onchange="sync()"><span>中間</span></label>
+          <label><input type="radio" name="thick-lv" value="濃いとろみ" onchange="sync()"><span>濃い</span></label>
+          <label><input type="radio" name="thick-lv" value="未実施"><span>未実施</span></label>
+        </div>
+      </div>
+      <div class="f"><label>使用製品・濃度</label><input type="text" id="thick-product" placeholder="製品名・g/100ml等"></div>
+    </div>
+    <div class="f"><label>判定スコア</label>
+      <div class="rg">
+        <label><input type="radio" name="mwst-t" value="1" onchange="evalMWSTt()"><span>1点</span></label>
+        <label><input type="radio" name="mwst-t" value="2" onchange="evalMWSTt()"><span>2点</span></label>
+        <label><input type="radio" name="mwst-t" value="3" onchange="evalMWSTt()"><span>3点</span></label>
+        <label><input type="radio" name="mwst-t" value="4" onchange="evalMWSTt()"><span>4点</span></label>
+        <label><input type="radio" name="mwst-t" value="5" onchange="evalMWSTt()"><span>5点</span></label>
+      </div>
+      <div id="mwstt-desc" class="hint" style="margin-top:5px"></div>
+    </div>
+    <div class="f"><label>通常水との比較</label>
+      <div class="rg">
+        <label><input type="radio" name="mwst-cmp" value="改善"><span>改善</span></label>
+        <label><input type="radio" name="mwst-cmp" value="変化なし"><span>変化なし</span></label>
+        <label><input type="radio" name="mwst-cmp" value="悪化"><span>悪化</span></label>
+      </div>
+    </div>
+    <div class="sub-sec" style="background:#fff">
+      <div class="sub-title">頸部聴診所見（とろみ水）</div>
+      <div class="f"><label>嚥下音</label>
+        <div class="rg">
+          <label><input type="radio" name="mwstt-snd" value="正常"><span>正常</span></label>
+          <label><input type="radio" name="mwstt-snd" value="弱い"><span>弱い</span></label>
+          <label><input type="radio" name="mwstt-snd" value="複数回"><span>複数回</span></label>
+          <label><input type="radio" name="mwstt-snd" value="聴取不明"><span>聴取不明</span></label>
+        </div>
+      </div>
+      <div class="f"><label>嚥下後の呼吸音</label>
+        <div class="rg">
+          <label><input type="radio" name="mwstt-br" value="クリア"><span>クリア</span></label>
+          <label><input type="radio" name="mwstt-br" value="ゴロゴロ"><span>ゴロゴロ</span></label>
+          <label><input type="radio" name="mwstt-br" value="ガラガラ"><span>ガラガラ</span></label>
+        </div>
+      </div>
+      <div class="f"><label>メモ</label><textarea placeholder="観察事項" style="min-height:44px"></textarea></div>
+    </div>
+    <div class="f"><label>メモ</label><textarea placeholder="とろみ水の観察事項"></textarea></div>
+  </div>
+  <div class="f"><label>サイレントアスピレーションの疑い</label>
+    <div class="rg">
+      <label><input type="radio" name="silent" value="なし" onchange="sync()"><span>なし</span></label>
+      <label><input type="radio" name="silent" value="疑い" onchange="sync()"><span>疑い</span></label>
+      <label><input type="radio" name="silent" value="強く疑う" onchange="sync()"><span>強く疑う</span></label>
+    </div>
+  </div>
+</div>
+
+<!-- FT -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">🍮</span>フードテスト（FT）</div>
+  <div class="row2">
+    <div class="f"><label>使用食品</label>
+      <div class="rg">
+        <label><input type="radio" name="ft-food" value="プリン（市販）"><span>プリン</span></label>
+        <label><input type="radio" name="ft-food" value="ゼリー"><span>ゼリー</span></label>
+        <label><input type="radio" name="ft-food" value="粥ゼリー"><span>粥ゼリー</span></label>
+        <label><input type="radio" name="ft-food" value="ヨーグルト"><span>ヨーグルト</span></label>
+        <label><input type="radio" name="ft-food" value="その他"><span>その他</span></label>
+      </div>
+    </div>
+    <div class="f"><label>食品詳細・量</label><input type="text" placeholder="製品名・4g等"></div>
+  </div>
+  <div class="f"><label>判定スコア</label>
+    <div class="rg">
+      <label><input type="radio" name="ft" value="1" onchange="evalFT();sync()"><span>1点</span></label>
+      <label><input type="radio" name="ft" value="2" onchange="evalFT();sync()"><span>2点</span></label>
+      <label><input type="radio" name="ft" value="3" onchange="evalFT();sync()"><span>3点</span></label>
+      <label><input type="radio" name="ft" value="4" onchange="evalFT();sync()"><span>4点</span></label>
+      <label><input type="radio" name="ft" value="5" onchange="evalFT();sync()"><span>5点</span></label>
+    </div>
+    <div id="ft-desc" class="hint" style="margin-top:5px"></div>
+    <div id="ft-alert"></div>
+  </div>
+  <div class="row2">
+    <div class="f"><label>口腔残留</label>
+      <div class="rg">
+        <label><input type="radio" name="ft-res" value="なし"><span>なし</span></label>
+        <label><input type="radio" name="ft-res" value="少量"><span>少量</span></label>
+        <label><input type="radio" name="ft-res" value="多量"><span>多量</span></label>
+      </div>
+    </div>
+    <div class="f"><label>咽頭残留感</label>
+      <div class="rg">
+        <label><input type="radio" name="ft-phr" value="なし"><span>なし</span></label>
+        <label><input type="radio" name="ft-phr" value="あり"><span>あり</span></label>
+        <label><input type="radio" name="ft-phr" value="不明"><span>不明</span></label>
+      </div>
+    </div>
+  </div>
+  <div class="sub-sec">
+    <div class="sub-title">頸部聴診所見（FT）</div>
+    <div class="f"><label>嚥下音</label>
+      <div class="rg">
+        <label><input type="radio" name="ft-snd" value="正常" onchange="sync()"><span>正常</span></label>
+        <label><input type="radio" name="ft-snd" value="弱い"><span>弱い</span></label>
+        <label><input type="radio" name="ft-snd" value="複数回"><span>複数回</span></label>
+        <label><input type="radio" name="ft-snd" value="聴取不明"><span>聴取不明</span></label>
+      </div>
+    </div>
+    <div class="f"><label>嚥下後の呼吸音</label>
+      <div class="rg">
+        <label><input type="radio" name="ft-br" value="クリア"><span>クリア</span></label>
+        <label><input type="radio" name="ft-br" value="ゴロゴロ"><span>ゴロゴロ</span></label>
+        <label><input type="radio" name="ft-br" value="ガラガラ"><span>ガラガラ</span></label>
+      </div>
+    </div>
+    <div class="f"><label>メモ</label><textarea placeholder="観察事項" style="min-height:44px"></textarea></div>
+  </div>
+  <div class="f"><label>FTメモ</label><textarea placeholder="観察事項"></textarea></div>
+</div>
+
+<!-- 栄養 -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">🍱</span>栄養状態・食形態</div>
+  <div class="row3">
+    <div class="f"><label>身長（cm）</label><input type="number" id="height" placeholder="cm" onchange="calcBMI()"></div>
+    <div class="f"><label>体重（kg）</label><input type="number" id="weight" placeholder="kg" onchange="calcBMI()"></div>
+    <div class="f"><label>BMI</label><div id="bmi" style="font-size:13px;padding-top:8px;color:#555">—</div></div>
+  </div>
+  <div class="f"><label>体重変化</label>
+    <div class="rg">
+      <label><input type="radio" name="wt-chg" value="変化なし"><span>変化なし</span></label>
+      <label><input type="radio" name="wt-chg" value="増加"><span>増加</span></label>
+      <label><input type="radio" name="wt-chg" value="減少"><span>減少</span></label>
+      <label><input type="radio" name="wt-chg" value="著明な減少"><span>著明な減少</span></label>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="f"><label>食形態（学会分類2021）</label>
+    <div class="rg">
+      <label><input type="radio" name="food-form" value="0j" onchange="sync()"><span>0j</span></label>
+      <label><input type="radio" name="food-form" value="0t" onchange="sync()"><span>0t</span></label>
+      <label><input type="radio" name="food-form" value="1j" onchange="sync()"><span>1j</span></label>
+      <label><input type="radio" name="food-form" value="2-1" onchange="sync()"><span>2-1</span></label>
+      <label><input type="radio" name="food-form" value="2-2" onchange="sync()"><span>2-2</span></label>
+      <label><input type="radio" name="food-form" value="3" onchange="sync()"><span>3</span></label>
+      <label><input type="radio" name="food-form" value="4" onchange="sync()"><span>4</span></label>
+      <label><input type="radio" name="food-form" value="常食" onchange="sync()"><span>常食</span></label>
+    </div>
+  </div>
+  <div class="f"><label>水分のとろみ</label>
+    <div class="rg">
+      <label><input type="radio" name="thk-lv" value="不要" onchange="sync()"><span>不要</span></label>
+      <label><input type="radio" name="thk-lv" value="薄いとろみ" onchange="sync()"><span>薄い</span></label>
+      <label><input type="radio" name="thk-lv" value="中間のとろみ" onchange="sync()"><span>中間</span></label>
+      <label><input type="radio" name="thk-lv" value="濃いとろみ" onchange="sync()"><span>濃い</span></label>
+    </div>
+  </div>
+  <div class="f"><label>食事摂取量（推定）</label>
+    <div class="rg">
+      <label><input type="radio" name="intake" value="〜25%"><span>〜25%</span></label>
+      <label><input type="radio" name="intake" value="26〜50%"><span>26〜50%</span></label>
+      <label><input type="radio" name="intake" value="51〜75%"><span>51〜75%</span></label>
+      <label><input type="radio" name="intake" value="76〜100%"><span>76〜100%</span></label>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="f"><label>栄養補助食品</label>
+    <div class="cg">
+      <label><input type="checkbox"><span>経口補水液</span></label>
+      <label><input type="checkbox"><span>栄養補助飲料</span></label>
+      <label><input type="checkbox"><span>高カロリーゼリー</span></label>
+      <label><input type="checkbox"><span>たんぱく質補助</span></label>
+      <label><input type="checkbox"><span>とろみ剤</span></label>
+      <label><input type="checkbox"><span>ミキサー食</span></label>
+    </div>
+  </div>
+  <div class="f"><label>栄養補助食品 詳細</label><input type="text" id="supp" placeholder="製品名・使用頻度など"></div>
+  <div class="f"><label>栄養メモ</label><textarea placeholder="摂取状況の詳細など"></textarea></div>
+</div>
+
+<!-- 写真 -->
+<div class="sec">
+  <div class="sec-title" style="justify-content:space-between">
+    <span><span class="ico">📸</span>写真記録</span>
+    <span style="font-size:11px;font-weight:400;color:#aaa">印刷時は非表示</span>
+  </div>
+  <div class="photo-zone" onclick="document.getElementById('photo-in').click()">
+    <div class="plus">+</div>
+    <p>タップして写真を追加<br><span style="font-size:11px">カメラ撮影・アルバムから選択できます</span></p>
+  </div>
+  <input type="file" id="photo-in" accept="image/*" multiple capture="environment" style="display:none" onchange="addPhotos(this)">
+  <div class="photo-grid" id="photo-grid"></div>
+</div>
+
+<!-- 総合所見 -->
+<div class="sec">
+  <div class="sec-title"><span class="ico">📝</span>総合所見・方針</div>
+  <div class="f"><label>総合リスク評価</label>
+    <div class="rg">
+      <label><input type="radio" name="risk" value="低リスク" onchange="sync()"><span>低リスク</span></label>
+      <label><input type="radio" name="risk" value="中リスク" onchange="sync()"><span>中リスク</span></label>
+      <label><input type="radio" name="risk" value="高リスク" onchange="sync()"><span>高リスク</span></label>
+    </div>
+  </div>
+  <div class="f"><label>推奨事項</label>
+    <div class="cg">
+      <label><input type="checkbox" class="rec-cb"><span>食形態の変更</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>とろみ調整</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>体位調整</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>口腔ケア強化</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>嚥下訓練</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>服薬形態の見直し</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>医師へ報告</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>VF/VE検討</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>多職種連携</span></label>
+      <label><input type="checkbox" class="rec-cb"><span>栄養補助の強化</span></label>
+    </div>
+  </div>
+  <div class="f"><label>所見・方針</label><textarea id="summary" placeholder="総合的な所見と支援方針" style="min-height:100px" oninput="sync()"></textarea></div>
+  <div class="f"><label>次回評価予定</label><input type="date" id="next-eval"></div>
+</div>
+
+<div class="btn-bar">
+  <button class="btn" onclick="clearForm()">クリア</button>
+  <button class="btn btn-accent" onclick="switchTab('explain');buildExplain()">家族説明を作成</button>
+  <button class="btn btn-primary" onclick="window.print()">印刷 / PDF</button>
+</div>
+</div>
+
+<!-- ========== 家族説明 ========== -->
+<div class="page" id="page-explain">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+  <div>
+    <div style="font-size:17px;font-weight:700;color:#1a1a1a" id="ex-title">評価結果のご説明</div>
+    <div style="font-size:12px;color:#888" id="ex-sub"></div>
+  </div>
+  <button class="btn" style="flex:none;width:auto;padding:7px 12px;font-size:13px" onclick="buildExplain()">更新</button>
+</div>
+<div id="explain-body"></div>
+<div class="btn-bar">
+  <button class="btn" onclick="switchTab('eval')">← 評価記録へ</button>
+  <button class="btn btn-primary" onclick="window.print()">印刷 / PDF</button>
+</div>
+</div>
 
 <script>
-  // 日付表示
-  const now = new Date();
-  document.getElementById('current-date').textContent =
-    now.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+const mwstDesc={1:'嚥下なし・むせ or 呼吸切迫',2:'嚥下あり・呼吸切迫',3:'嚥下あり・むせ or 湿性嗄声',4:'嚥下あり・むせなし・追加嚥下で改善',5:'嚥下あり・むせなし・良好'};
+const ftDesc={1:'嚥下なし・むせ or 呼吸切迫',2:'嚥下あり・呼吸切迫',3:'嚥下あり・むせ or 湿性嗄声 or 口腔残留多量',4:'嚥下あり・むせなし・追加嚥下で残留消失',5:'嚥下あり・むせなし・残留なし'};
+const fdDesc={'0j':'ゼリー状（嚥下訓練食）','0t':'とろみ水','1j':'ゼリー・プリン状','2-1':'ピューレ・ペースト状','2-2':'やわらか食','3':'やわらかい普通食に近い','4':'ほぼ普通食','常食':'制限なし'};
 
-  // タブ切り替え
-  function showSection(id) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('sec-' + id).classList.add('active');
-    event.target.classList.add('active');
-    if (id === 'summary') updateSummary();
-    if (id === 'records') renderRecords();
-  }
+const today = new Date();
+document.getElementById('eval-date').value = today.toISOString().split('T')[0];
+document.getElementById('hdr-date').textContent = today.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
 
-  // RSST タイマー
-  let rsstTimer = null;
-  let rsstSeconds = 30;
-  let rsstCountVal = 0;
-  let rsstRunning = false;
+let photos = [];
 
-  function rsstStart() {
-    if (rsstRunning) return;
-    rsstRunning = true;
-    document.getElementById('rsst-start-btn').textContent = '計測中...';
-    document.getElementById('rsst-timer-sub').textContent = '喉仏が指の腹を越えるたびに＋を押す';
-    rsstTimer = setInterval(() => {
-      rsstSeconds--;
-      document.getElementById('rsst-timer').textContent = rsstSeconds;
-      if (rsstSeconds <= 0) {
-        clearInterval(rsstTimer);
-        rsstRunning = false;
-        document.getElementById('rsst-start-btn').textContent = '完了';
-        document.getElementById('rsst-timer-sub').textContent = '測定完了';
-        showRsstResult();
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      }
-    }, 1000);
-  }
+function addPhotos(input){
+  Array.from(input.files).forEach(f=>{
+    const r = new FileReader();
+    r.onload = e => { photos.push({src:e.target.result,label:''}); renderPhotos(); sync(); };
+    r.readAsDataURL(f);
+  });
+  input.value='';
+}
 
-  function rsstReset() {
-    clearInterval(rsstTimer);
-    rsstRunning = false;
-    rsstSeconds = 30;
-    rsstCountVal = 0;
-    document.getElementById('rsst-timer').textContent = '30';
-    document.getElementById('rsst-timer-sub').textContent = '開始ボタンを押してください';
-    document.getElementById('rsst-count').textContent = '0';
-    document.getElementById('rsst-start-btn').textContent = '開始';
-    document.getElementById('rsst-result').innerHTML = '';
-  }
+function renderPhotos(){
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML='';
+  photos.forEach((p,i)=>{
+    const d = document.createElement('div');
+    d.className='photo-item';
+    d.innerHTML=`<img src="${p.src}" alt="" onclick="openLb(${i})">
+      <button class="photo-del" onclick="delPhoto(${i})">✕</button>
+      <div class="photo-memo"><input type="text" placeholder="姿勢・食事内容など" value="${p.label}" oninput="photos[${i}].label=this.value"></div>`;
+    grid.appendChild(d);
+  });
+}
+function delPhoto(i){ photos.splice(i,1); renderPhotos(); sync(); }
+function openLb(i){ document.getElementById('lb-img').src=photos[i].src; document.getElementById('lb').classList.add('open'); }
+function closeLb(){ document.getElementById('lb').classList.remove('open'); }
 
-  function rsstCount(delta) {
-    rsstCountVal = Math.max(0, rsstCountVal + delta);
-    document.getElementById('rsst-count').textContent = rsstCountVal;
-    if (!rsstRunning && rsstSeconds < 30) showRsstResult();
-  }
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='eval'?0:1)));
+  document.querySelectorAll('.page').forEach((el,i)=>el.classList.toggle('active',i===(t==='eval'?0:1)));
+  if(t==='explain') buildExplain();
+}
 
-  function showRsstResult() {
-    const count = rsstCountVal;
-    let cls, title, detail;
-    if (count >= 3) {
-      cls = 'normal'; title = '正常 (' + count + '回)';
-      detail = '30秒間に3回以上の嚥下が確認されました。嚥下機能は正常範囲内と考えられます。';
-    } else if (count >= 2) {
-      cls = 'caution'; title = '要観察 (' + count + '回)';
-      detail = '2回の嚥下が確認されましたが、基準（3回以上）を下回っています。他のテストと合わせて評価してください。';
-    } else {
-      cls = 'alert'; title = '要精査 (' + count + '回)';
-      detail = '嚥下回数が少なく（' + count + '回）、嚥下機能低下の可能性があります。専門医への相談をご検討ください。';
-    }
-    document.getElementById('rsst-result').innerHTML =
-      `<div class="result-box ${cls}"><div class="result-title">${title}</div><div class="result-detail">${detail}</div></div>`;
-  }
+function evalRSST(){
+  const v=parseInt(document.getElementById('rsst').value);
+  const el=document.getElementById('rsst-result');
+  if(isNaN(v)){el.innerHTML='';return}
+  if(v>=3) el.innerHTML='<span class="badge b-ok">正常（'+v+'回）</span>';
+  else if(v===2) el.innerHTML='<span class="badge b-w">要観察（'+v+'回）</span>';
+  else el.innerHTML='<span class="badge b-ng">障害疑い（'+v+'回）</span>';
+}
+function evalMWST(){
+  const v=document.querySelector('[name=mwst]:checked');
+  if(!v) return;
+  document.getElementById('mwst-desc').textContent=mwstDesc[v.value]||'';
+  document.getElementById('mwst-alert').innerHTML=parseInt(v.value)<=3?'<div class="alert-d">経口摂取の安全性に注意が必要です</div>':'';
+}
+function evalMWSTt(){
+  const v=document.querySelector('[name=mwst-t]:checked');
+  if(v) document.getElementById('mwstt-desc').textContent=mwstDesc[v.value]||'';
+}
+function evalFT(){
+  const v=document.querySelector('[name=ft]:checked');
+  if(!v) return;
+  document.getElementById('ft-desc').textContent=ftDesc[v.value]||'';
+  document.getElementById('ft-alert').innerHTML=parseInt(v.value)<=3?'<div class="alert-w">食形態・姿勢の見直しを検討してください</div>':'';
+}
+function evalTongue(){
+  const v=parseFloat(document.getElementById('tongue-p').value);
+  const el=document.getElementById('tongue-eval');
+  if(isNaN(v)){el.textContent='—';return}
+  el.textContent=v>=30?'正常域（30kPa以上）':v>=20?'境界域（20〜29kPa）':'低舌圧（20kPa未満）';
+}
+function calcBMI(){
+  const h=parseFloat(document.getElementById('height').value)/100;
+  const w=parseFloat(document.getElementById('weight').value);
+  const el=document.getElementById('bmi');
+  if(!h||!w){el.textContent='—';return}
+  const b=(w/(h*h)).toFixed(1);
+  el.textContent=b+'　'+(b<18.5?'低体重':b<25?'普通体重':b<30?'過体重':'肥満');
+}
 
-  // MWST/FT ラジオ変化で結果表示
-  document.querySelectorAll('input[name="mwst-score"]').forEach(r => r.addEventListener('change', showMwstResult));
-  document.querySelectorAll('input[name="ft-score"]').forEach(r => r.addEventListener('change', showFtResult));
+function sync(){
+  const nm=document.getElementById('name').value.trim();
+  document.getElementById('hdr-name').textContent=nm||'';
+  const checks={
+    't-basic': nm!==''||document.querySelector('.med-cb:checked')!==null,
+    't-req': document.getElementById('req-detail').value.trim()!==''||document.querySelector('.req-cb:checked')!==null,
+    't-oral': document.querySelector('[name="oral-hyg"]:checked')!==null,
+    't-rsst': document.getElementById('rsst').value!=='',
+    't-mwst': document.querySelector('[name=mwst]:checked')!==null,
+    't-ft': document.querySelector('[name=ft]:checked')!==null,
+    't-cerv': document.querySelector('[name=mwst-snd]:checked')!==null||document.querySelector('[name=ft-snd]:checked')!==null,
+    't-nut': document.querySelector('[name=food-form]:checked')!==null,
+    't-photo': photos.length>0
+  };
+  for(const[id,done] of Object.entries(checks)) document.getElementById(id).classList.toggle('done',done);
+}
 
-  function getScoreClass(score) {
-    if (score >= 4) return 'normal';
-    if (score === 3) return 'caution';
-    return 'alert';
-  }
+document.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',sync));
+document.getElementById('name').addEventListener('input',sync);
 
-  function showMwstResult() {
-    const score = parseInt(document.querySelector('input[name="mwst-score"]:checked')?.value || 0);
-    if (!score) return;
-    const messages = {
-      1: ['要精査', '嚥下が起こらず、誤嚥のリスクが高い状態です。経口摂取の中止を検討してください。'],
-      2: ['要精査', '嚥下はありましたが呼吸変化が認められます。誤嚥の可能性があります。'],
-      3: ['要観察', 'むせまたは湿性嗄声が認められます。追加評価または食形態の調整を検討してください。'],
-      4: ['良好', '嚥下機能は比較的良好です。経口摂取を継続しながら経過観察してください。'],
-      5: ['正常', '嚥下機能は正常範囲内です。追加嚥下も良好に行えています。'],
-    };
-    const [title, detail] = messages[score];
-    const cls = getScoreClass(score);
-    document.getElementById('mwst-result').innerHTML =
-      `<div class="result-box ${cls}"><div class="result-title">${title}（${score}点）</div><div class="result-detail">${detail}</div></div>`;
-  }
+function buildExplain(){
+  const nm=document.getElementById('name').value||'ご利用者様';
+  const dt=document.getElementById('eval-date').value;
+  const dg=document.getElementById('diag').value;
+  const risk=document.querySelector('[name=risk]:checked');
+  const rv=risk?risk.value:'未評価';
+  const mwst=document.querySelector('[name=mwst]:checked');
+  const ft=document.querySelector('[name=ft]:checked');
+  const rsst=document.getElementById('rsst').value;
+  const ff=document.querySelector('[name=food-form]:checked');
+  const thk=document.querySelector('[name=thk-lv]:checked');
+  const sa=document.querySelector('[name=silent]:checked');
+  const cr=document.querySelector('[name=cough-ref]:checked');
+  const tl=document.querySelector('[name=thick-lv]:checked');
+  const warns=[]; const recs=[];
 
-  function showFtResult() {
-    const score = parseInt(document.querySelector('input[name="ft-score"]:checked')?.value || 0);
-    if (!score) return;
-    const messages = {
-      1: ['要精査', '嚥下が起こらず、誤嚥のリスクが極めて高い状態です。経口摂取の中止を検討してください。'],
-      2: ['要精査', '嚥下はありましたが呼吸変化が認められます。誤嚥の可能性があります。'],
-      3: ['要観察', 'むせや口腔残留が認められます。食形態の調整や訓練を検討してください。'],
-      4: ['良好', '嚥下機能は比較的良好ですが、軽度の口腔残留があります。経過観察を行ってください。'],
-      5: ['正常', '嚥下機能は正常範囲内です。口腔内残留もなく良好な評価です。'],
-    };
-    const [title, detail] = messages[score];
-    const cls = getScoreClass(score);
-    document.getElementById('ft-result').innerHTML =
-      `<div class="result-box ${cls}"><div class="result-title">${title}（${score}点）</div><div class="result-detail">${detail}</div></div>`;
-  }
+  document.getElementById('ex-title').textContent=nm+'様　評価結果のご説明';
+  document.getElementById('ex-sub').textContent='評価日：'+dt+(dg?'　'+dg:'');
 
-  // まとめ
-  function updateSummary() {
-    const name = document.getElementById('rsst-name').value ||
-                 document.getElementById('mwst-name').value ||
-                 document.getElementById('ft-name').value || '（名前未入力）';
-    const rsst = rsstCountVal;
-    const mwst = document.querySelector('input[name="mwst-score"]:checked')?.value;
-    const ft = document.querySelector('input[name="ft-score"]:checked')?.value;
+  if(mwst&&parseInt(mwst.value)<=3) warns.push('水でむせやすく、誤嚥（食べ物や水が気管に入ること）のリスクがあります');
+  if(ft&&parseInt(ft.value)<=3) warns.push('食べ物が上手く飲み込めない状態がみられます');
+  if(sa&&sa.value!=='なし') warns.push('むせが出ない「静かな誤嚥（サイレントアスピレーション）」の可能性があります');
+  if(cr&&cr.value==='消失') warns.push('咳反射が低下しており、誤嚥しても咳き込めない可能性があります');
+  document.querySelectorAll('.rec-cb:checked').forEach(cb=>recs.push(cb.closest('label').querySelector('span').textContent));
 
-    const hasData = rsst > 0 || mwst || ft;
-    if (!hasData) {
-      document.getElementById('summary-content').innerHTML =
-        '<div class="empty-state"><div class="icon">📋</div><p>各タブでテストを実施してください</p></div>';
-      return;
-    }
+  const rc=rv==='高リスク'?'high':rv==='中リスク'?'mid':'low';
+  const lvHtml=['低リスク','中リスク','高リスク'].map(lv=>`<div class="rv ${lv===rv?rc:''}">${lv}</div>`).join('');
 
-    function badge(val, type) {
-      if (type === 'rsst') {
-        if (val >= 3) return '<span class="badge badge-green">正常 ' + val + '回</span>';
-        if (val >= 2) return '<span class="badge badge-yellow">要観察 ' + val + '回</span>';
-        return '<span class="badge badge-red">要精査 ' + val + '回</span>';
-      }
-      const v = parseInt(val);
-      if (v >= 4) return '<span class="badge badge-green">' + v + '点</span>';
-      if (v === 3) return '<span class="badge badge-yellow">' + v + '点</span>';
-      return '<span class="badge badge-red">' + v + '点</span>';
-    }
+  let h=`<div class="ex-card"><h3>総合的なリスク評価</h3><div class="risk-bar">${lvHtml}</div>`;
+  if(warns.length) h+=`<div class="warn-box"><div class="wt">気になる点</div>${warns.map(w=>'<p>・'+w+'</p>').join('')}</div>`;
+  h+=`</div>`;
 
-    const rsstNote = document.getElementById('rsst-note').value;
-    const mwstNote = document.getElementById('mwst-note').value;
-    const ftNote = document.getElementById('ft-note').value;
+  h+=`<div class="ex-card"><h3>検査結果</h3>`;
+  if(rsst) h+=`<div class="ex-row"><span class="ex-lbl">反復唾液嚥下テスト（RSST）</span><span class="ex-val">30秒間 ${rsst}回</span></div>`;
+  if(mwst) h+=`<div class="ex-row"><span class="ex-lbl">水飲みテスト（MWST）</span><span class="ex-val">${mwst.value}点／5点</span></div>`;
+  if(tl&&tl.value!=='未実施'){const mt=document.querySelector('[name=mwst-t]:checked');h+=`<div class="ex-row"><span class="ex-lbl">とろみ水テスト（${tl.value}）</span><span class="ex-val">${mt?mt.value+'点／5点':'実施済'}</span></div>`;}
+  if(ft){const ftf=document.querySelector('[name=ft-food]:checked');h+=`<div class="ex-row"><span class="ex-lbl">食物テスト（FT）${ftf?'・'+ftf.value:''}</span><span class="ex-val">${ft.value}点／5点</span></div>`;}
+  if(cr) h+=`<div class="ex-row"><span class="ex-lbl">咳反射</span><span class="ex-val">${cr.value}</span></div>`;
+  h+=`</div>`;
 
-    document.getElementById('summary-content').innerHTML = `
-      <div class="summary-row">
-        <span class="summary-label">患者名</span>
-        <strong>${name}</strong>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">評価日時</span>
-        <span>${now.toLocaleDateString('ja-JP')} ${now.toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'})}</span>
-      </div>
-      ${rsst > 0 ? `<div class="summary-row"><span class="summary-label">RSST</span>${badge(rsst, 'rsst')}</div>` : ''}
-      ${mwst ? `<div class="summary-row"><span class="summary-label">MWST</span>${badge(mwst, 'mwst')}</div>` : ''}
-      ${ft ? `<div class="summary-row"><span class="summary-label">フードテスト</span>${badge(ft, 'ft')}</div>` : ''}
-      ${rsstNote ? `<div class="summary-row"><span class="summary-label">RSST備考</span><span style="font-size:13px;color:#374151;text-align:right;max-width:60%">${rsstNote}</span></div>` : ''}
-      ${mwstNote ? `<div class="summary-row"><span class="summary-label">MWST備考</span><span style="font-size:13px;color:#374151;text-align:right;max-width:60%">${mwstNote}</span></div>` : ''}
-      ${ftNote ? `<div class="summary-row"><span class="summary-label">FT備考</span><span style="font-size:13px;color:#374151;text-align:right;max-width:60%">${ftNote}</span></div>` : ''}
-    `;
-  }
+  h+=`<div class="ex-card"><h3>お食事について</h3>`;
+  if(ff) h+=`<div class="ex-row"><span class="ex-lbl">適した食形態</span><span class="ex-val">コード${ff.value}　${fdDesc[ff.value]||''}</span></div>`;
+  if(thk) h+=`<div class="ex-row"><span class="ex-lbl">水分のとろみ</span><span class="ex-val">${thk.value}</span></div>`;
+  const sup=document.getElementById('supp').value;
+  if(sup) h+=`<div class="ex-row"><span class="ex-lbl">栄養補助食品</span><span class="ex-val">${sup}</span></div>`;
+  h+=`</div>`;
 
-  // 保存
-  function saveSummary() {
-    const name = document.getElementById('rsst-name').value ||
-                 document.getElementById('mwst-name').value ||
-                 document.getElementById('ft-name').value || '名前未入力';
-    const rsst = rsstCountVal;
-    const mwst = document.querySelector('input[name="mwst-score"]:checked')?.value || null;
-    const ft = document.querySelector('input[name="ft-score"]:checked')?.value || null;
+  if(recs.length) h+=`<div class="ex-card"><h3>今後お願いしたいこと</h3><ul class="rec-ul">${recs.map(r=>'<li>'+r+'</li>').join('')}</ul></div>`;
 
-    if (rsst === 0 && !mwst && !ft) {
-      alert('評価データがありません。少なくとも1つのテストを実施してください。');
-      return;
-    }
+  const sm=document.getElementById('summary').value;
+  if(sm) h+=`<div class="ex-card"><h3>担当者からのコメント</h3><p style="font-size:14px;line-height:1.7;color:#333">${sm.replace(/\n/g,'<br>')}</p></div>`;
 
-    const record = {
-      id: Date.now(),
-      name,
-      date: new Date().toISOString(),
-      rsst: rsst || null,
-      mwst: mwst ? parseInt(mwst) : null,
-      ft: ft ? parseInt(ft) : null,
-      notes: {
-        rsst: document.getElementById('rsst-note').value,
-        mwst: document.getElementById('mwst-note').value,
-        ft: document.getElementById('ft-note').value,
-      }
-    };
+  const ne=document.getElementById('next-eval').value;
+  if(ne) h+=`<div class="ex-card" style="background:#f8fafc"><div class="ex-row"><span class="ex-lbl">次回評価予定</span><span class="ex-val">${ne}</span></div></div>`;
 
-    const records = JSON.parse(localStorage.getItem('swallowing-records') || '[]');
-    records.unshift(record);
-    localStorage.setItem('swallowing-records', JSON.stringify(records));
+  h+=`<div class="ex-footer">評価者：歯科衛生士　タカマツ サチヨ</div>`;
+  document.getElementById('explain-body').innerHTML=h;
+}
 
-    alert('記録を保存しました。');
-    renderRecords();
-  }
+function clearForm(){
+  if(!confirm('入力内容と写真をすべてクリアしますか？')) return;
+  document.querySelectorAll('input:not([type=date]):not([type=file])').forEach(el=>{
+    if(el.type==='radio'||el.type==='checkbox') el.checked=false;
+    else el.value='';
+  });
+  document.querySelectorAll('textarea,select').forEach(el=>el.value='');
+  document.getElementById('bmi').textContent='—';
+  document.getElementById('rsst-result').innerHTML='';
+  ['mwst-desc','mwst-alert','mwstt-desc','ft-desc','ft-alert'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('eval-date').value=today.toISOString().split('T')[0];
+  document.getElementById('tongue-eval').textContent='—';
+  photos=[]; renderPhotos();
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('done'));
+  document.getElementById('hdr-name').textContent='';
+}
 
-  // クリア
-  function clearAll() {
-    if (!confirm('入力内容をすべてクリアしますか？')) return;
-    document.getElementById('rsst-name').value = '';
-    document.getElementById('mwst-name').value = '';
-    document.getElementById('ft-name').value = '';
-    document.querySelectorAll('input[name="mwst-score"]').forEach(r => r.checked = false);
-    document.querySelectorAll('input[name="ft-score"]').forEach(r => r.checked = false);
-    document.getElementById('rsst-note').value = '';
-    document.getElementById('mwst-note').value = '';
-    document.getElementById('ft-note').value = '';
-    document.getElementById('mwst-result').innerHTML = '';
-    document.getElementById('ft-result').innerHTML = '';
-    rsstReset();
-    updateSummary();
-  }
+// PWA Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
 
-  // 記録一覧
-  function renderRecords() {
-    const records = JSON.parse(localStorage.getItem('swallowing-records') || '[]');
-    const el = document.getElementById('records-list');
-    if (records.length === 0) {
-      el.innerHTML = '<div class="empty-state"><div class="icon">📂</div><p>まだ記録がありません</p></div>';
-      return;
-    }
-
-    function badge(label, val, type) {
-      if (val === null) return '';
-      let cls;
-      if (type === 'rsst') cls = val >= 3 ? 'badge-green' : val >= 2 ? 'badge-yellow' : 'badge-red';
-      else cls = val >= 4 ? 'badge-green' : val === 3 ? 'badge-yellow' : 'badge-red';
-      const text = type === 'rsst' ? `RSST ${val}回` : `${label} ${val}点`;
-      return `<span class="badge ${cls}">${text}</span>`;
-    }
-
-    el.innerHTML = records.map(r => {
-      const d = new Date(r.date);
-      const dateStr = d.toLocaleDateString('ja-JP') + ' ' + d.toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'});
-      return `
-        <div class="record-card">
-          <div class="record-header">
-            <div>
-              <div class="record-name">${r.name}</div>
-              <div class="record-date">${dateStr}</div>
-            </div>
-            <button class="delete-btn" onclick="deleteRecord(${r.id})">×</button>
-          </div>
-          <div class="record-scores">
-            ${badge('RSST', r.rsst, 'rsst')}
-            ${badge('MWST', r.mwst, 'mwst')}
-            ${badge('FT', r.ft, 'ft')}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function deleteRecord(id) {
-    if (!confirm('この記録を削除しますか？')) return;
-    const records = JSON.parse(localStorage.getItem('swallowing-records') || '[]');
-    localStorage.setItem('swallowing-records', JSON.stringify(records.filter(r => r.id !== id)));
-    renderRecords();
-  }
-
-  // Service Worker 登録
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(console.error);
-  }
+buildExplain();
 </script>
 </body>
 </html>
